@@ -17,6 +17,21 @@ const formatTime = (seconds = 0) => { // 시간을 소수점 없이 시, 분, �
   return `0:${secs < 10 ? '0' : ''}${secs}`; 
 };
 
+const displayPitch = (pitchValue) => { // 피치값 보정 함수
+  if (pitchValue === 1) {
+    return 0;
+  }
+
+  let result;
+  if (pitchValue < 1) {
+    result = -12 * (1 - pitchValue) / 0.5;
+  } else {
+    result = 12 * (pitchValue - 1) / 1;
+  }
+
+  return result.toFixed(2);
+};
+
 const App = () => {
   const soundRef = useRef(null);
   const [songTitle, setSongTitle] = useState(""); // 곡의 제목
@@ -29,7 +44,7 @@ const App = () => {
   const [loading, setLoading] = useState(true); // 곡의 로딩 여부
 
   useEffect(() => { // react-native-sound를 활용
-    const filepath = './assets/music/Cirrus.mp3'; // 파일의 경로
+    const filepath = './assets/music/Popular-Potpourri.mp3'; // 파일의 경로
     const fileName = filepath.split('/').pop().split('.')[0]; // 파일 이름을 추출하는 변수
     setSongTitle(fileName);
     soundRef.current = new Sound(require(filepath), Sound.MAIN_BUNDLE, (error) => {
@@ -124,20 +139,26 @@ const App = () => {
         maximumValue={2.0}
         onSlidingComplete={changeRate}
       />
-      <Text style={styles.timeStamp}>{`Playback pitch: ${pitch.toFixed(2)}`}</Text> // 현재 피치를 알려주는 텍스트
-      <Text style={styles.timeStamp}>{`Playback speed: ${rate.toFixed(2)}`}</Text> // 현재 배속을 알려주는 텍스트
+      {/* // 현재 피치를 알려주는 텍스트 */}
+      <Text style={styles.timeStamp}>{`Playback pitch: ${displayPitch(pitch)}`}</Text>
+      {/* // 현재 배속을 알려주는 텍스트 */}
+      <Text style={styles.timeStamp}>{`Playback speed: ${rate.toFixed(2)}`}</Text>
       <View style={styles.controlRow}>
         <TouchableOpacity style={styles.icon} onPress={() => soundRef.current.setCurrentTime(Math.max(0, currentTime - 10))}>
-          <Icon name="stepbackward" size={44} color="white" /> // 곡을 10초 이전부터 재생하는 버튼
+          <Icon name="stepbackward" size={44} color="white" />
+          {/* 곡을 10초 이전부터 재생하는 버튼 */}
         </TouchableOpacity>
         <TouchableOpacity style={styles.icon} onPress={togglePlay}>
-          <Icon name={isPlaying ? "pausecircle" : "playcircleo"} size={44} color="white" /> // 곡을 정지 및 재생하는 버튼
+          <Icon name={isPlaying ? "pausecircle" : "playcircleo"} size={44} color="white" /> 
+          {/* // 곡을 정지 및 재생하는 버튼 */}
         </TouchableOpacity> 
         <TouchableOpacity style={styles.icon} onPress={() => soundRef.current.setCurrentTime(Math.min(duration, currentTime + 10))}>
-          <Icon name="stepforward" size={44} color="white" /> // 곡을 10초 이후부터 재생하는 버튼 
+          <Icon name="stepforward" size={44} color="white" />
+          {/* // 곡을 10초 이후부터 재생하는 버튼  */}
         </TouchableOpacity>
         <TouchableOpacity style={styles.icon} onPress={() => setRepeat(!repeat)}>
-        <Icon name="retweet" size={44} color={repeat ? "white" : "grey"} /> // 곡을 반복하는 버튼
+        <Icon name="retweet" size={44} color={repeat ? "white" : "grey"} /> 
+        {/* // 곡을 반복하는 버튼 */}
       </TouchableOpacity>
       </View>
     </View>
